@@ -1,0 +1,9 @@
+lib/
+test/
+coverage/
+.coveralls.yml
+.gitignore
+.npmignore
+.travis.yml
+tsconfig.json
+yarn.lock
