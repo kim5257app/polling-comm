@@ -7,3 +7,4 @@ coverage/
 .travis.yml
 tsconfig.json
 yarn.lock
+.idea

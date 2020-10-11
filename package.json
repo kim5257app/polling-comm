@@ -1,5 +1,5 @@
 {
-  "name": "polling-comm",
+  "name": "@kim5257/polling-comm",
   "version": "0.0.1",
   "description": "Long Polling Communication Module",
   "main": "dist/index.js",
@@ -7,7 +7,8 @@
     "build": "tsc",
     "test": "mocha --reporter spec",
     "cover": "nyc node_modules/mocha/bin/_mocha test/*.js -- -R spec",
-    "coveralls": "yarn cover --report lcovonly && type .\\coverage\\lcov.info | coveralls"
+    "coveralls": "yarn cover --report lcovonly && type .\\coverage\\lcov.info | coveralls",
+    "example01": "node ./example/example01.js"
   },
   "repository": {
     "type": "git",
@@ -15,6 +16,9 @@
   },
   "author": "Jaegu Kim",
   "license": "MIT",
+  "publishConfig": {
+    "@kim5257:registry": "http://kim5257.iptime.org/api/v4/projects/3/packages/npm/"
+  },
   "devDependencies": {
     "@types/debug": "^4.1.5",
     "@types/events": "^3.0.0",
@@ -30,6 +34,7 @@
     "typescript": "^4.0.3"
   },
   "dependencies": {
+    "@kim5257/js-error": "^0.0.2",
     "anyid": "^1.0.7",
     "debug": "^4.2.0",
     "express": "^4.17.1"

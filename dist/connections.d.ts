@@ -1,5 +1,10 @@
+/// <reference types="node" />
+import { EventEmitter as Events } from 'events';
+import Connection from './connection';
 export default class Connections {
     private static readonly CLIENT_ID_LENGTH;
-    connList: Object;
-    makeClientId(): string;
+    events: Events;
+    connList: Map<string, Connection>;
+    makeConnection(): string;
+    hasConnection(clientId: string): boolean;
 }

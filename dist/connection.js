@@ -5,7 +5,7 @@ const events_1 = require("events");
 const debug = debug_1.default('polling-comm/connection');
 class Connection {
     // wait 요청 결과
-    constructor(id, comm) {
+    constructor(id) {
         // 이벤트 목록
         this.events = new events_1.EventEmitter();
         // 그룹 목록
@@ -13,7 +13,9 @@ class Connection {
         // 전송 데이터 큐
         this.emitList = [];
         this.id = id;
-        this.comm = comm;
+    }
+    recv(eventName, payload) {
+        this.events.emit(eventName, payload);
     }
     emit(eventName, payload) {
         debug(`[${this.id}][${eventName}]: ${JSON.stringify(payload)}`);
