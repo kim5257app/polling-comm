@@ -26,7 +26,7 @@ class Server {
                 });
             }
             catch (error) {
-                res.status(400).json(error);
+                res.status(400).json(js_error_1.default.make(error));
             }
         }));
         router.post('/emit', ((req, res) => {
@@ -45,10 +45,26 @@ class Server {
                 }
             }
             catch (error) {
-                res.status(400).json(error);
+                res.status(400).json(js_error_1.default.make(error));
             }
         }));
         router.get('/wait', ((req, res) => {
+            try {
+                const clientId = req.header('id');
+                if (clientId == null) {
+                    js_error_1.default.throwFail('ERR_BAD_REQUEST', 'Wrong Header', 400);
+                }
+                else if (!this.connections.hasConnection(clientId)) {
+                    js_error_1.default.throwFail('ERR_GONE', 'No connection this clientID', 400);
+                }
+                else {
+                    const connection = this.connections.connList.get(clientId);
+                    connection === null || connection === void 0 ? void 0 : connection.wait(req, res);
+                }
+            }
+            catch (error) {
+                res.status(400).json(js_error_1.default.make(error));
+            }
         }));
         return router;
     }

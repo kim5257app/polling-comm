@@ -34,5 +34,6 @@ module.exports = {
       jsx: 'never',
       ts: 'never',
     }],
+    'no-unused-vars': 'off',
   },
 };

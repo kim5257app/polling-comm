@@ -4,7 +4,6 @@ import { EventEmitter as Events } from 'events';
 
 const debug = Debug('polling-comm/connection');
 
-// eslint-disable-next-line no-unused-vars
 export type EventCallback = (eventName: string, payload: object) => void;
 
 interface WaitRequest {
@@ -13,14 +12,11 @@ interface WaitRequest {
 }
 
 export interface GroupManage {
-  // eslint-disable-next-line no-unused-vars
   join: (groupName: string, clientId: string) => void,
-  // eslint-disable-next-line no-unused-vars
   leave: (groupName: string, clientId: string) => void,
 }
 
 export interface EventManage {
-  // eslint-disable-next-line no-unused-vars
   emit: (name: string, data: any) => void,
 }
 
@@ -28,6 +24,11 @@ export interface ConnectOptions {
   closeTimeout?: number,
   groupManage: GroupManage,
   eventManage: EventManage,
+}
+
+interface Packet {
+  name: string,
+  payload: object,
 }
 
 export default class Connection {
@@ -62,7 +63,7 @@ export default class Connection {
   private eventManage?: EventManage;
 
   // 미들웨어 함수 목록
-  private fns: Array<(payload: object, fn: (error?: any) => void) => void> = [];
+  private fns: Array<(pkt: Packet, next: (err?: any) => void) => void> = [];
 
   constructor(id: string, options: ConnectOptions) {
     this.id = id;
@@ -89,7 +90,7 @@ export default class Connection {
     });
   }
 
-  private run(payload: object, fn: (error?: any) => void) {
+  private run(pkt: Packet, fn: (error?: any) => void) {
     const fns = [...this.fns];
 
     if (fns.length <= 0) {
@@ -97,14 +98,14 @@ export default class Connection {
     }
 
     function run(idx: number) {
-      fns[idx](payload, (error) => {
+      fns[idx](pkt, (error) => {
         if (error) {
           fn(error);
         } else if (fns[idx + 1] == null) {
           fn(null);
+        } else {
+          run(idx + 1);
         }
-
-        run(idx + 1);
       });
     }
 
@@ -126,6 +127,11 @@ export default class Connection {
 
     this.resetTimeout();
     this.doProgress();
+  }
+
+  public use(fn: (pkt: Packet, next: (err?: any) => void) => void): Connection {
+    this.fns.push(fn);
+    return this;
   }
 
   public emit(eventName: string, payload: object): void {
