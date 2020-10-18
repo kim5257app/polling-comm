@@ -1,10 +1,6 @@
-import Debug from 'debug';
 import * as http from 'http';
 import * as express from 'express';
 import { EventEmitter as Events } from 'events';
-import Error from '@kim5257/js-error';
-
-const debug = Debug('polling-comm/server');
 
 export interface ServerEventParam {
   req: express.Request;

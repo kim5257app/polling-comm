@@ -1,3 +1,3 @@
-const PollingComm = require('../dist').default
+const PollingComm = require('../dist').default;
 
-const server = new PollingComm(4000);
+const server = new PollingComm({ port: 4000 });

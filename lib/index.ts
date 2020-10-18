@@ -4,9 +4,14 @@ import { AnyId } from 'anyid';
 import Error from '@kim5257/js-error';
 
 import Server, { ServerEventParam } from './server';
-import Socket from './socket';
+import Socket, { Options as SocketOpts } from './socket';
+import Groups from './groups';
 
 const debug = Debug('polling-comm');
+
+interface Options extends SocketOpts {
+  port: number;
+}
 
 export default class PollingComm {
   private static readonly CLIENT_ID_LENGTH = 8;
@@ -23,10 +28,21 @@ export default class PollingComm {
   // 외부 이벤트 전달자
   event = new Events();
 
-  constructor(port: number) {
+  // Socket 적용 옵션
+  options: Options;
+
+  // 그룹 관리 객체
+  groups: Groups = new Groups();
+
+  constructor(options: Options) {
+    this.options = {
+      ...options,
+      groups: this.groups,
+    };
+
     this.initServerEvents();
 
-    this.server = new Server(port, this.serverEvent);
+    this.server = new Server(options.port, this.serverEvent);
   }
 
   private initServerEvents(): void {
@@ -79,7 +95,7 @@ export default class PollingComm {
         .id();
     } while (this.socketList.has(clientId));
 
-    const socket = new Socket(clientId);
+    const socket = new Socket(clientId, this.options);
 
     this.socketList.set(clientId, socket);
 
