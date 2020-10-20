@@ -52,13 +52,15 @@ class PollingComm {
                 }
                 else if (!this.socketList.has(id)) {
                     debug(`Disconnected: ${id}`);
+                    js_error_1.default.throwFail('ERR_GONE', 'This id isn\'t available', 410);
                 }
                 else {
                     (_a = this.socketList.get(id)) === null || _a === void 0 ? void 0 : _a.wait({ req, res });
                 }
             }
             catch (error) {
-                res.status(400).json(js_error_1.default.make(error));
+                const code = (error.code != null && error.code > 200) ? error.code : 500;
+                res.status(code).json(js_error_1.default.make(error));
             }
         });
     }

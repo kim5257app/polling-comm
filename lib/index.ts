@@ -65,6 +65,26 @@ export default class PollingComm {
     });
 
     this.serverEvent.on('emit', ({ req, res }: ServerEventParam) => {
+      try {
+        const id: string | undefined = req.header('id');
+
+        if (id == null) {
+          Error.throwFail('ERR_BAD_REQUEST', 'Wrong Header', 400);
+        } else {
+          const socket = this.socketList.get(id);
+          if (socket != null) {
+            // 데이터 수신 이벤트 발생
+            socket.events.emit('recv', req.body);
+            res.status(200).json({ result: 'success' });
+          } else {
+            debug(`Disconnected: ${id}`);
+            Error.throwFail('ERR_GONE', 'This id isn\'t available', 410);
+          }
+        }
+      } catch (error) {
+        const code = (error.code != null && error.code > 200) ? error.code : 500;
+        res.status(code).json(Error.make(error));
+      }
     });
 
     this.serverEvent.on('wait', ({ req, res }: ServerEventParam) => {
@@ -73,13 +93,18 @@ export default class PollingComm {
 
         if (id == null) {
           Error.throwFail('ERR_BAD_REQUEST', 'Wrong Header', 400);
-        } else if (!this.socketList.has(id)) {
-          debug(`Disconnected: ${id}`);
         } else {
-          this.socketList.get(id)?.wait({ req, res });
+          const socket = this.socketList.get(id);
+          if (socket != null) {
+            socket.wait({ req, res });
+          } else {
+            debug(`Disconnected: ${id}`);
+            Error.throwFail('ERR_GONE', 'This id isn\'t available', 410);
+          }
         }
       } catch (error) {
-        res.status(400).json(Error.make(error));
+        const code = (error.code != null && error.code > 200) ? error.code : 500;
+        res.status(code).json(Error.make(error));
       }
     });
   }

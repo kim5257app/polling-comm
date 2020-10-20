@@ -22,6 +22,7 @@ export default class Server {
 
     this.app.set('port', port);
     this.app.use('/comm', this.commRouter());
+    this.app.use(express.json());
 
     this.server = http.createServer(this.app);
 
