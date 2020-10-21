@@ -80,6 +80,7 @@ class Socket {
                 group.forEach((socket) => {
                     if (socket.id !== this.id) {
                         socket.emitList.push(packet);
+                        socket.doProgress();
                     }
                 });
             });
@@ -94,6 +95,14 @@ class Socket {
         if (socketList != null) {
             this.groupList.add(socketList);
         }
+        return this;
+    }
+    join(groupName) {
+        this.groups.join({ groupName, socket: this });
+        return this;
+    }
+    leave(groupName) {
+        this.groups.leave({ groupName, socket: this });
         return this;
     }
     // wait 요청이 오면 emit 으로 수신된 데이터로 응답

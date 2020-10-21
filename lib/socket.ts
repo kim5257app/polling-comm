@@ -125,6 +125,7 @@ export default class Socket {
         group.forEach((socket) => {
           if (socket.id !== this.id) {
             socket.emitList.push(packet);
+            socket.doProgress();
           }
         });
       });
@@ -141,6 +142,16 @@ export default class Socket {
       this.groupList.add(socketList);
     }
 
+    return this;
+  }
+
+  public join(groupName: string): Socket {
+    this.groups.join({ groupName, socket: this });
+    return this;
+  }
+
+  public leave(groupName: string): Socket {
+    this.groups.leave({ groupName, socket: this });
     return this;
   }
 

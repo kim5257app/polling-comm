@@ -27,6 +27,8 @@ export default class Socket {
     on(name: string, cb: (data: object) => void): void;
     emit(name: string, data: object): void;
     to(group: string): Socket;
+    join(groupName: string): Socket;
+    leave(groupName: string): Socket;
     private doProgress;
     private resetTimeout;
 }
