@@ -42,20 +42,44 @@ class PollingComm {
             }
         });
         this.serverEvent.on('emit', ({ req, res }) => {
-        });
-        this.serverEvent.on('wait', ({ req, res }) => {
-            var _a;
             try {
                 const id = req.header('id');
                 if (id == null) {
                     js_error_1.default.throwFail('ERR_BAD_REQUEST', 'Wrong Header', 400);
                 }
-                else if (!this.socketList.has(id)) {
-                    debug(`Disconnected: ${id}`);
-                    js_error_1.default.throwFail('ERR_GONE', 'This id isn\'t available', 410);
+                else {
+                    const socket = this.socketList.get(id);
+                    if (socket != null) {
+                        // 데이터 수신 이벤트 발생
+                        socket.events.emit('recv', req.body);
+                        res.status(200).json({ result: 'success' });
+                    }
+                    else {
+                        debug(`Disconnected: ${id}`);
+                        js_error_1.default.throwFail('ERR_GONE', 'This id isn\'t available', 410);
+                    }
+                }
+            }
+            catch (error) {
+                const code = (error.code != null && error.code > 200) ? error.code : 500;
+                res.status(code).json(js_error_1.default.make(error));
+            }
+        });
+        this.serverEvent.on('wait', ({ req, res }) => {
+            try {
+                const id = req.header('id');
+                if (id == null) {
+                    js_error_1.default.throwFail('ERR_BAD_REQUEST', 'Wrong Header', 400);
                 }
                 else {
-                    (_a = this.socketList.get(id)) === null || _a === void 0 ? void 0 : _a.wait({ req, res });
+                    const socket = this.socketList.get(id);
+                    if (socket != null) {
+                        socket.wait({ req, res });
+                    }
+                    else {
+                        debug(`Disconnected: ${id}`);
+                        js_error_1.default.throwFail('ERR_GONE', 'This id isn\'t available', 410);
+                    }
                 }
             }
             catch (error) {

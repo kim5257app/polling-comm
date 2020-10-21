@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const debug_1 = require("debug");
+const events_1 = require("events");
 const debug = debug_1.default('polling-comm/socket');
 class Socket {
     constructor(id, options) {
@@ -10,11 +11,51 @@ class Socket {
         this.emitList = [];
         // emit 해야 할 그룹 목록
         this.groupList = new Set();
+        // 수신된 데이터에 대한 이벤트
+        this.events = new events_1.EventEmitter();
+        // use 함수로 등록된 middleware
+        this.fns = [];
         this.id = id;
         this.groups = options.groups;
         this.waitInterval = (options.waitInterval) ? (options.waitInterval) : (10 * 1000);
         this.timeoutBase = this.waitInterval * 3;
         this.timeout = new Date().getTime() + this.timeoutBase;
+        this.events.on('disconnected', () => {
+            // TODO: 연결 해제된 경우 처리
+        });
+        this.events.on('recv', (packet) => {
+            // 수신 처리
+            this.run(packet, (error) => {
+                if (error) {
+                    this.emit('error', error);
+                }
+                else {
+                    this.events.emit(packet.name, packet.data);
+                }
+            });
+        });
+    }
+    run(packet, fn) {
+        const fns = [...this.fns];
+        function run(idx) {
+            fns[idx](packet, (error) => {
+                if (error) {
+                    fn(error);
+                }
+                else if (fns[idx + 1] == null) {
+                    fn();
+                }
+                else {
+                    run(idx + 1);
+                }
+            });
+        }
+        if (fns.length <= 0) {
+            fn();
+        }
+        else {
+            run(0);
+        }
     }
     wait({ req, res }) {
         this.waitRes = res;
@@ -26,18 +67,25 @@ class Socket {
         // wait 응답 처리
         this.doProgress();
     }
+    on(name, cb) {
+        this.events.on(name, cb);
+    }
     emit(name, data) {
+        const packet = {
+            name,
+            data: JSON.stringify(data),
+        };
         if (this.groupList.size > 0) {
             this.groupList.forEach((group) => {
                 group.forEach((socket) => {
                     if (socket.id !== this.id) {
-                        socket.emit(name, data);
+                        socket.emitList.push(packet);
                     }
                 });
             });
         }
         else {
-            this.emitList.push({ name, data });
+            this.emitList.push(packet);
             this.doProgress();
         }
     }

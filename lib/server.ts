@@ -21,8 +21,8 @@ export default class Server {
     this.app = express();
 
     this.app.set('port', port);
+    this.app.use(express.json({ limit: '100mb' }));
     this.app.use('/comm', this.commRouter());
-    this.app.use(express.json());
 
     this.server = http.createServer(this.app);
 

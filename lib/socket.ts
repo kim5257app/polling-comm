@@ -77,10 +77,6 @@ export default class Socket {
   private run(packet: Packet, fn: (error?: Error) => void) {
     const fns = [...this.fns];
 
-    if (fns.length <= 0) {
-      fn();
-    }
-
     function run(idx: number) {
       fns[idx](packet, (error?: Error) => {
         if (error) {
@@ -93,7 +89,11 @@ export default class Socket {
       });
     }
 
-    run(0);
+    if (fns.length <= 0) {
+      fn();
+    } else {
+      run(0);
+    }
   }
 
   public wait({ req, res }: ServerEventParam): void {
@@ -108,6 +108,10 @@ export default class Socket {
 
     // wait 응답 처리
     this.doProgress();
+  }
+
+  public on(name: string, cb: (data: object) => void) {
+    this.events.on(name, cb);
   }
 
   public emit(name: string, data: object) {
