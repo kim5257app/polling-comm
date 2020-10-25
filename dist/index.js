@@ -32,10 +32,17 @@ class PollingComm {
                 // 새로운 연결 생성 및 'connection' 이벤트 전달
                 const socket = this.makeSocket();
                 debug('New socket:', socket.id);
-                this.event.emit('connection', socket);
-                res.status(200).json({
-                    result: 'success',
-                    clientId: socket.id,
+                this.run(socket, (error) => {
+                    if (error) {
+                        js_error_1.default.throwError(error);
+                    }
+                    else {
+                        this.event.emit('connection', socket);
+                        res.status(200).json({
+                            result: 'success',
+                            clientId: socket.id,
+                        });
+                    }
                 });
             }
             catch (error) {
