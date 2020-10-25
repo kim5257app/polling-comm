@@ -70,6 +70,9 @@ class Socket {
     on(name, cb) {
         this.events.on(name, cb);
     }
+    use(fn) {
+        this.fns.push(fn);
+    }
     emit(name, data) {
         const packet = {
             name,

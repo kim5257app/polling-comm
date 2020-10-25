@@ -14,9 +14,12 @@ export default class PollingComm {
     event: Events;
     options: Options;
     groups: Groups;
+    private fns;
     constructor(options: Options);
     private initServerEvents;
     private makeSocket;
+    private run;
     on(name: 'connection', cb: (connection: any) => void): void;
+    use(fn: (socket: Socket, next: (error?: any) => void) => void): void;
 }
 export {};

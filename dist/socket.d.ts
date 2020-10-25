@@ -25,6 +25,7 @@ export default class Socket {
     private run;
     wait({ req, res }: ServerEventParam): void;
     on(name: string, cb: (data: object) => void): void;
+    use(fn: (packet: Packet, next: (error?: Error) => void) => void): void;
     emit(name: string, data: object): void;
     to(group: string): Socket;
     join(groupName: string): Socket;

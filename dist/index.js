@@ -18,6 +18,7 @@ class PollingComm {
         this.event = new events_1.EventEmitter();
         // 그룹 관리 객체
         this.groups = new groups_1.default();
+        this.fns = [];
         this.options = {
             ...options,
             groups: this.groups,
@@ -101,8 +102,33 @@ class PollingComm {
         this.socketList.set(clientId, socket);
         return socket;
     }
+    run(socket, fn) {
+        const fns = [...this.fns];
+        function run(idx) {
+            fns[idx](socket, (error) => {
+                if (error) {
+                    fn(error);
+                }
+                else if (fns[idx + 1] == null) {
+                    fn();
+                }
+                else {
+                    run(idx + 1);
+                }
+            });
+        }
+        if (fns.length <= 0) {
+            fn();
+        }
+        else {
+            run(0);
+        }
+    }
     on(name, cb) {
         this.event.on(name, cb);
+    }
+    use(fn) {
+        this.fns.push(fn);
     }
 }
 exports.default = PollingComm;

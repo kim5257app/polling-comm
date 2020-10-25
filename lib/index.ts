@@ -34,6 +34,8 @@ export default class PollingComm {
   // 그룹 관리 객체
   groups: Groups = new Groups();
 
+  private fns: ((socket: Socket, next: (error?: any) => void) => void)[] = [];
+
   constructor(options: Options) {
     this.options = {
       ...options,
@@ -53,11 +55,17 @@ export default class PollingComm {
 
         debug('New socket:', socket.id);
 
-        this.event.emit('connection', socket);
+        this.run(socket, (error) => {
+          if (error) {
+            Error.throwError(error);
+          } else {
+            this.event.emit('connection', socket);
 
-        res.status(200).json({
-          result: 'success',
-          clientId: socket.id,
+            res.status(200).json({
+              result: 'success',
+              clientId: socket.id,
+            });
+          }
         });
       } catch (error) {
         res.status(400).json(Error.make(error));
@@ -127,7 +135,33 @@ export default class PollingComm {
     return socket;
   }
 
+  private run(socket: Socket, fn: (error?: Error) => void) {
+    const fns = [...this.fns];
+
+    function run(idx: number) {
+      fns[idx](socket, (error?: Error) => {
+        if (error) {
+          fn(error);
+        } else if (fns[idx + 1] == null) {
+          fn();
+        } else {
+          run(idx + 1);
+        }
+      });
+    }
+
+    if (fns.length <= 0) {
+      fn();
+    } else {
+      run(0);
+    }
+  }
+
   public on(name: 'connection', cb: (connection: any) => void): void {
     this.event.on(name, cb);
+  }
+
+  public use(fn: (socket: Socket, next: (error?: any) => void) => void): void {
+    this.fns.push(fn);
   }
 }

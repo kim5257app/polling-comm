@@ -114,6 +114,10 @@ export default class Socket {
     this.events.on(name, cb);
   }
 
+  public use(fn: (packet: Packet, next:(error?: Error) => void) => void): void {
+    this.fns.push(fn);
+  }
+
   public emit(name: string, data: object) {
     const packet = {
       name,
