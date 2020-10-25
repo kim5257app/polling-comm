@@ -21,5 +21,6 @@ export default class PollingComm {
     private run;
     on(name: 'connection', cb: (connection: any) => void): void;
     use(fn: (socket: Socket, next: (error?: any) => void) => void): void;
+    close(): void;
 }
 export {};

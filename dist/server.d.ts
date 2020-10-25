@@ -12,4 +12,5 @@ export default class Server {
     serverEvent: Events;
     constructor(port: number, serverEvent: Events);
     private commRouter;
+    close(): void;
 }

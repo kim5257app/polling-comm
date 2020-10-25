@@ -25,5 +25,8 @@ class Server {
         }));
         return router;
     }
+    close() {
+        this.server.close();
+    }
 }
 exports.default = Server;

@@ -164,4 +164,8 @@ export default class PollingComm {
   public use(fn: (socket: Socket, next: (error?: any) => void) => void): void {
     this.fns.push(fn);
   }
+
+  public close(): void {
+    this.server.close();
+  }
 }

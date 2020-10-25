@@ -48,4 +48,8 @@ export default class Server {
 
     return router;
   }
+
+  public close(): void {
+    this.server.close();
+  }
 }

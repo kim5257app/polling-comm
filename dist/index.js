@@ -137,6 +137,9 @@ class PollingComm {
     use(fn) {
         this.fns.push(fn);
     }
+    close() {
+        this.server.close();
+    }
 }
 exports.default = PollingComm;
 PollingComm.CLIENT_ID_LENGTH = 8;
