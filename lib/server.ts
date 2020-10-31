@@ -1,5 +1,6 @@
 import * as http from 'http';
 import * as express from 'express';
+import * as cors from 'cors';
 import { EventEmitter as Events } from 'events';
 
 export interface ServerEventParam {
@@ -21,6 +22,8 @@ export default class Server {
     this.app = express();
 
     this.app.set('port', port);
+
+    this.app.use(cors());
     this.app.use(express.json({ limit: '100mb' }));
     this.app.use('/comm', this.commRouter());
 

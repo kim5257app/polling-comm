@@ -25,9 +25,22 @@ client.on('echo', (data) => {
   console.log('-> recv:', JSON.stringify(data));
 });
 
-setInterval(() => {
+let count = 2;
+
+const timeoutHandler = () => {
   const data = { message: 'TEST' };
 
   console.log('<- emit:', JSON.stringify(data));
   client.emit('echo', { message: 'TEST' });
-}, 2000);
+
+  count = count - 1;
+  if (count > 0) {
+    setTimeout(timeoutHandler, 2000);
+  } else {
+    console.log('end');
+    client.close();
+    server.close();
+  }
+}
+
+setTimeout(timeoutHandler, 2000);

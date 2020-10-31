@@ -2,10 +2,12 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const http = require("http");
 const express = require("express");
+const cors = require("cors");
 class Server {
     constructor(port, serverEvent) {
         this.app = express();
         this.app.set('port', port);
+        this.app.use(cors());
         this.app.use(express.json({ limit: '100mb' }));
         this.app.use('/comm', this.commRouter());
         this.server = http.createServer(this.app);
