@@ -2,6 +2,7 @@ import Debug from 'debug';
 import { Response } from 'express';
 import { EventEmitter as Events } from 'events';
 import { ServerEventParam } from './server';
+import { SocketStore, MemStore } from './store';
 
 // eslint-disable-next-line import/no-cycle
 import Groups from './groups';
@@ -15,6 +16,7 @@ export interface Packet {
 
 export interface Options {
   groups: Groups;
+  store?: SocketStore;
   waitInterval?: number;
 }
 
@@ -48,10 +50,14 @@ export default class Socket {
   // 연결 타임아웃 (wait가 일정시간 없으면 연결 종료)
   private timeout: number;
 
+  private store: SocketStore;
+
   constructor(id: string, options: Options) {
     this.id = id;
 
     this.groups = options.groups;
+
+    this.store = (options.store != null) ? options.store : (new MemStore());
 
     this.waitInterval = (options.waitInterval) ? (options.waitInterval) : (10 * 1000);
     this.timeoutBase = this.waitInterval * 3;
@@ -157,6 +163,14 @@ export default class Socket {
   public leave(groupName: string): Socket {
     this.groups.leave({ groupName, socket: this });
     return this;
+  }
+
+  public get(key: string): Promise<any> {
+    return this.store.get(key);
+  }
+
+  public set(key: string, value: any): Promise<void> {
+    return this.store.set(key, value);
   }
 
   // wait 요청이 오면 emit 으로 수신된 데이터로 응답

@@ -1,6 +1,7 @@
 /// <reference types="node" />
 import { EventEmitter as Events } from 'events';
 import { ServerEventParam } from './server';
+import { SocketStore } from './store';
 import Groups from './groups';
 export interface Packet {
     name: string;
@@ -8,6 +9,7 @@ export interface Packet {
 }
 export interface Options {
     groups: Groups;
+    store?: SocketStore;
     waitInterval?: number;
 }
 export default class Socket {
@@ -21,6 +23,7 @@ export default class Socket {
     private readonly waitInterval;
     private readonly timeoutBase;
     private timeout;
+    private store;
     constructor(id: string, options: Options);
     private run;
     wait({ req, res }: ServerEventParam): void;
@@ -30,6 +33,8 @@ export default class Socket {
     to(group: string): Socket;
     join(groupName: string): Socket;
     leave(groupName: string): Socket;
+    get(key: string): Promise<any>;
+    set(key: string, value: any): Promise<void>;
     private doProgress;
     private resetTimeout;
 }

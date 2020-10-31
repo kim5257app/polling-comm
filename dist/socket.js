@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const debug_1 = require("debug");
 const events_1 = require("events");
+const store_1 = require("./store");
 const debug = debug_1.default('polling-comm/socket');
 class Socket {
     constructor(id, options) {
@@ -17,6 +18,7 @@ class Socket {
         this.fns = [];
         this.id = id;
         this.groups = options.groups;
+        this.store = (options.store != null) ? options.store : (new store_1.MemStore());
         this.waitInterval = (options.waitInterval) ? (options.waitInterval) : (10 * 1000);
         this.timeoutBase = this.waitInterval * 3;
         this.timeout = new Date().getTime() + this.timeoutBase;
@@ -107,6 +109,12 @@ class Socket {
     leave(groupName) {
         this.groups.leave({ groupName, socket: this });
         return this;
+    }
+    get(key) {
+        return this.store.get(key);
+    }
+    set(key, value) {
+        return this.store.set(key, value);
     }
     // wait 요청이 오면 emit 으로 수신된 데이터로 응답
     // emit 요청이 오면 wait 요청이 있을 경우 데이터로 응답
