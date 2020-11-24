@@ -15,7 +15,8 @@ export default class PollingComm {
     options: Options;
     groups: Groups;
     private fns;
-    constructor(options: Options);
+
+  constructor(options: { port: number });
     private initServerEvents;
     private makeSocket;
     private run;
