@@ -1,11 +1,13 @@
 /// <reference types="node" />
 import { EventEmitter as Events } from 'events';
+import * as express from 'express';
 import Server from './server';
 import Socket, { Options as SocketOpts } from './socket';
 import Groups from './groups';
 import { ClusterOptions } from './cluster';
 interface Options extends SocketOpts {
-    port: number;
+    app?: express.Express;
+    port?: number;
 }
 export default class PollingComm {
     private static readonly CLIENT_ID_LENGTH;

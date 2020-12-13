@@ -2,6 +2,7 @@ import Debug from 'debug';
 import { EventEmitter as Events } from 'events';
 import { AnyId } from 'anyid';
 import Error from '@kim5257/js-error';
+import * as express from 'express';
 
 import Server, { ServerEventParam } from './server';
 // eslint-disable-next-line import/no-cycle
@@ -15,7 +16,8 @@ import Cluster, { ClusterOptions } from './cluster';
 const debug = Debug('polling-comm');
 
 interface Options extends SocketOpts {
-  port: number;
+  app?: express.Express;
+  port?: number;
 }
 
 export default class PollingComm {
@@ -54,7 +56,13 @@ export default class PollingComm {
 
     this.initServerEvents();
 
-    this.server = new Server(options.port, this.serverEvent);
+    if (options.port != null) {
+      this.server = new Server(options.port, this.serverEvent);
+    } else if (options.app != null) {
+      this.server = new Server(options.app, this.serverEvent);
+    } else {
+      throw Error.makeFail('WRONG_ARGS', 'Wrong Arguments');
+    }
   }
 
   private initServerEvents(): void {
@@ -221,7 +229,7 @@ export default class PollingComm {
           channel: 'emit',
           data: {
             groupList: [...this.groupList],
-            pkt: {name, data},
+            pkt: { name, data },
           },
         });
       }

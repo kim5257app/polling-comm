@@ -31,7 +31,15 @@ class PollingComm {
             groups: this.groups,
         };
         this.initServerEvents();
-        this.server = new server_1.default(options.port, this.serverEvent);
+        if (options.port != null) {
+            this.server = new server_1.default(options.port, this.serverEvent);
+        }
+        else if (options.app != null) {
+            this.server = new server_1.default(options.app, this.serverEvent);
+        }
+        else {
+            throw js_error_1.default.makeFail('WRONG_ARGS', 'Wrong Arguments');
+        }
     }
     initServerEvents() {
         this.serverEvent.on('connect', ({ res }) => {

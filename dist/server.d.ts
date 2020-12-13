@@ -8,9 +8,9 @@ export interface ServerEventParam {
 }
 export default class Server {
     app: express.Express;
-    server: http.Server;
+    server: http.Server | null;
     serverEvent: Events;
-    constructor(port: number, serverEvent: Events);
+    constructor(port: number | express.Express, serverEvent: Events);
     private commRouter;
     close(): void;
 }

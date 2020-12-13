@@ -13,30 +13,37 @@ export default class Server {
   app: express.Express;
 
   // 웹 서버
-  server: http.Server;
+  server: http.Server | null;
 
   // 웹 요청 처리자
   serverEvent: Events;
 
-  constructor(port: number, serverEvent: Events) {
-    this.app = express();
+  constructor(port: number | express.Express, serverEvent: Events) {
+    if (typeof port === 'number') {
+      this.app = express();
 
-    this.app.set('port', port);
+      this.app.set('port', port);
 
-    // CORS 허용
-    this.app.use(cors());
+      // CORS 허용
+      this.app.use(cors());
 
-    // JSON parser 사용
-    // Body 크기 제한은 100MB로 제한
-    this.app.use(express.json({ limit: '100mb' }));
+      // JSON parser 사용
+      // Body 크기 제한은 100MB로 제한
+      this.app.use(express.json({ limit: '100mb' }));
 
-    // '/comm' 경로 이후 루틴은 commRouter에서 설정
-    this.app.use('/comm', this.commRouter());
+      // '/comm' 경로 이후 루틴은 commRouter에서 설정
+      this.app.use('/comm', this.commRouter());
 
-    // 웹 서버 생성
-    this.server = http.createServer(this.app);
+      // 웹 서버 생성
+      this.server = http.createServer(this.app);
 
-    this.server.listen(port);
+      this.server.listen(port);
+
+      this.serverEvent = serverEvent;
+    } else {
+      this.app = port;
+      this.server = null;
+    }
 
     this.serverEvent = serverEvent;
   }
@@ -60,6 +67,6 @@ export default class Server {
   }
 
   public close(): void {
-    this.server.close();
+    this.server?.close();
   }
 }

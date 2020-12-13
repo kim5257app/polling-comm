@@ -14,6 +14,8 @@ interface Request {
   data: any;
 }
 
+type RespCb = (data: any) => void;
+
 export default class Cluster {
   private id: string = new AnyId()
     .encode('Aa0')
@@ -27,6 +29,8 @@ export default class Cluster {
 
   private sub: RedisClient;
 
+  private reqList = new Map<number, RespCb>();
+
   private io: PollingComm;
 
   constructor(io:PollingComm, options: ClusterOptions) {
@@ -38,7 +42,10 @@ export default class Cluster {
     this.sub.on('subscribe', this.onSubscribe.bind(this));
     this.sub.on('message', this.onMessage.bind(this));
 
+    this.sub.subscribe('response');
+
     this.sub.subscribe('emit');
+    this.sub.subscribe('groups');
   }
 
   private onSubscribe(channel: string, count: number) {
@@ -50,11 +57,29 @@ export default class Cluster {
 
     if (this.id !== payload.id) {
       switch (channel) {
+        case 'response':
+          this.onResponse(payload);
+          break;
         case 'emit':
           this.onEmit(payload);
           break;
         default:
           break;
+      }
+    }
+  }
+
+  private onResponse(payload: {
+    id: string,
+    reqNo: number,
+    data: any,
+  }): void {
+    if (this.id === payload.id) {
+      const request = this.reqList.get(payload.reqNo);
+
+      if (request != null) {
+        request(payload.data);
+        this.reqList.delete(payload.reqNo);
       }
     }
   }
@@ -78,7 +103,7 @@ export default class Cluster {
     this.io.emit(emitInfo.pkt.name, emitInfo.pkt.data, true);
   }
 
-  public publish(req: Request) {
+  public publish(req: Request, cb?: RespCb) {
     const payload = {
       id: this.id,
       reqNo: this.reqNo,
@@ -86,5 +111,11 @@ export default class Cluster {
     };
 
     this.pub.publish(req.channel, JSON.stringify(payload));
+
+    if (cb != null) {
+      this.reqList.set(payload.reqNo, cb);
+    }
+
+    this.reqNo += 1;
   }
 }
