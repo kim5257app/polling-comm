@@ -6,6 +6,8 @@ import { SocketStore, MemStore } from './store';
 
 // eslint-disable-next-line import/no-cycle
 import Groups from './groups';
+// eslint-disable-next-line import/no-cycle
+import Cluster from './cluster';
 
 const debug = Debug('polling-comm/socket');
 
@@ -18,6 +20,7 @@ export interface Options {
   groups: Groups;
   store?: SocketStore;
   waitInterval?: number;
+  cluster?: Cluster;
 }
 
 export default class Socket {
@@ -25,6 +28,9 @@ export default class Socket {
 
   // 그룹 관리 객체
   private groups: Groups;
+
+  // 클러스터 객체
+  private cluster: Cluster | undefined;
 
   // wait 요청에 대한 응답 객체
   private waitRes: Response | null = null;
@@ -56,6 +62,8 @@ export default class Socket {
     this.id = id;
 
     this.groups = options.groups;
+
+    this.cluster = options.cluster;
 
     this.store = (options.store != null) ? options.store : (new MemStore());
 
@@ -144,7 +152,14 @@ export default class Socket {
         }
       });
 
-      // TODO: 다른 클러스터에도 전달 요청
+      // 다른 클러스터에도 전달 요청
+      this.cluster?.publish({
+        channel: 'emit',
+        data: {
+          groupList: this.groupList,
+          pkt: { name, data },
+        },
+      });
     } else {
       this.emitList.push(packet);
       this.doProgress();

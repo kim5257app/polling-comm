@@ -7,6 +7,8 @@ const js_error_1 = require("@kim5257/js-error");
 const server_1 = require("./server");
 const socket_1 = require("./socket");
 const groups_1 = require("./groups");
+// eslint-disable-next-line import/no-cycle
+const cluster_1 = require("./cluster");
 const debug = debug_1.default('polling-comm');
 class PollingComm {
     constructor(options) {
@@ -19,6 +21,9 @@ class PollingComm {
         // 그룹 관리 객체
         this.groups = new groups_1.default();
         this.fns = [];
+        // emit 해야 할 그룹 목록
+        this.groupList = new Set();
+        this.cluster = null;
         this.options = {
             ...options,
             groups: this.groups,
@@ -164,8 +169,40 @@ class PollingComm {
     use(fn) {
         this.fns.push(fn);
     }
+    emit(name, data) {
+        var _a;
+        if (this.groupList.size > 0) {
+            this.groupList.forEach((groupName) => {
+                const socketList = this.groups.socketList.get(groupName);
+                if (socketList != null) {
+                    socketList.forEach((socket) => {
+                        socket.emit(name, data);
+                    });
+                }
+            });
+            // 다른 클러스터에도 전달 요청
+            (_a = this.cluster) === null || _a === void 0 ? void 0 : _a.publish({
+                channel: 'emit',
+                data: {
+                    groupList: this.groupList,
+                    pkt: { name, data },
+                },
+            });
+        }
+    }
+    to(groupName) {
+        this.groupList.add(groupName);
+        return this;
+    }
     close() {
         this.server.close();
+    }
+    setCluster(opts) {
+        this.cluster = new cluster_1.default(this, opts);
+        this.options = {
+            ...this.options,
+            cluster: this.cluster,
+        };
     }
 }
 exports.default = PollingComm;

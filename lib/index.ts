@@ -7,6 +7,9 @@ import Server, { ServerEventParam } from './server';
 import Socket, { Options as SocketOpts } from './socket';
 import Groups from './groups';
 
+// eslint-disable-next-line import/no-cycle
+import Cluster, { ClusterOptions } from './cluster';
+
 const debug = Debug('polling-comm');
 
 interface Options extends SocketOpts {
@@ -38,6 +41,8 @@ export default class PollingComm {
 
   // emit 해야 할 그룹 목록
   private groupList = new Set<string>();
+
+  private cluster: Cluster | null = null;
 
   constructor(options: Options) {
     this.options = {
@@ -197,11 +202,6 @@ export default class PollingComm {
   }
 
   public emit(name: string, data: object) {
-    const packet = {
-      name,
-      data: JSON.stringify(data),
-    };
-
     if (this.groupList.size > 0) {
       this.groupList.forEach((groupName) => {
         const socketList = this.groups.socketList.get(groupName);
@@ -213,7 +213,14 @@ export default class PollingComm {
         }
       });
 
-      // TODO: 다른 클러스터에도 전달 요청
+      // 다른 클러스터에도 전달 요청
+      this.cluster?.publish({
+        channel: 'emit',
+        data: {
+          groupList: this.groupList,
+          pkt: { name, data },
+        },
+      });
     }
   }
 
@@ -224,5 +231,14 @@ export default class PollingComm {
 
   public close(): void {
     this.server.close();
+  }
+
+  public setCluster(opts: ClusterOptions): void {
+    this.cluster = new Cluster(this, opts);
+
+    this.options = {
+      ...this.options,
+      cluster: this.cluster,
+    };
   }
 }

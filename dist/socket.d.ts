@@ -3,6 +3,7 @@ import { EventEmitter as Events } from 'events';
 import { ServerEventParam } from './server';
 import { SocketStore } from './store';
 import Groups from './groups';
+import Cluster from './cluster';
 export interface Packet {
     name: string;
     data: string;
@@ -11,10 +12,12 @@ export interface Options {
     groups: Groups;
     store?: SocketStore;
     waitInterval?: number;
+    cluster?: Cluster;
 }
 export default class Socket {
     readonly id: string;
     private groups;
+    private cluster;
     private waitRes;
     private emitList;
     private groupList;
@@ -30,7 +33,7 @@ export default class Socket {
     on(name: string, cb: (data: object) => void): void;
     use(fn: (packet: Packet, next: (error?: Error) => void) => void): void;
     emit(name: string, data: object): void;
-    to(group: string): Socket;
+    to(groupName: string): Socket;
     join(groupName: string): Socket;
     leave(groupName: string): Socket;
     get(key: string): Promise<any>;

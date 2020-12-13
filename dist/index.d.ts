@@ -3,6 +3,7 @@ import { EventEmitter as Events } from 'events';
 import Server from './server';
 import Socket, { Options as SocketOpts } from './socket';
 import Groups from './groups';
+import { ClusterOptions } from './cluster';
 interface Options extends SocketOpts {
     port: number;
 }
@@ -15,12 +16,17 @@ export default class PollingComm {
     options: Options;
     groups: Groups;
     private fns;
+    private groupList;
+    private cluster;
     constructor(options: Options);
     private initServerEvents;
     private makeSocket;
     private run;
     on(name: 'connection', cb: (connection: any) => void): void;
     use(fn: (socket: Socket, next: (error?: any) => void) => void): void;
+    emit(name: string, data: object): void;
+    to(groupName: string): PollingComm;
     close(): void;
+    setCluster(opts: ClusterOptions): void;
 }
 export {};

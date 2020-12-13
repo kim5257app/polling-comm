@@ -1,16 +1,16 @@
 import { AnyId } from 'anyid';
 import { RedisClient } from 'redis';
+
+// eslint-disable-next-line import/no-cycle
 import PollingComm from './index';
 
-interface ClusterOptions {
+export interface ClusterOptions {
   host: string;
   port: number;
 }
 
 interface Request {
   channel: 'emit' | 'resp';
-  id: string;
-  reqNo: number;
   data: any;
 }
 
@@ -60,11 +60,21 @@ export default class Cluster {
     reqNo: number,
     data: any,
   }): void {
-    const emitInfo = payload.data;
-    this.io.to(emitInfo.groupName).emit(emitInfo.pkt.name, emitInfo.pkt.data);
+    const emitInfo: {
+      groupList: Set<string>,
+      pkt: {
+        name: string,
+        data: object,
+      }
+    } = payload.data;
+
+    emitInfo.groupList.forEach((groupName) => {
+      this.io.to(groupName);
+    });
+    this.io.emit(emitInfo.pkt.name, emitInfo.pkt.data);
   }
 
-  private publish(req: Request) {
+  public publish(req: Request) {
     const payload = {
       id: this.id,
       reqNo: this.reqNo,

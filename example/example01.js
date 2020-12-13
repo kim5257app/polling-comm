@@ -25,7 +25,7 @@ client.on('echo', (data) => {
   console.log('-> recv:', JSON.stringify(data));
 });
 
-let count = 2;
+let count = 10;
 
 const timeoutHandler = () => {
   const data = { message: 'TEST' };

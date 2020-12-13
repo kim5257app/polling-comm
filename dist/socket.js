@@ -18,6 +18,7 @@ class Socket {
         this.fns = [];
         this.id = id;
         this.groups = options.groups;
+        this.cluster = options.cluster;
         this.store = (options.store != null) ? options.store : (new store_1.MemStore());
         this.waitInterval = (options.waitInterval) ? (options.waitInterval) : (10 * 1000);
         this.timeoutBase = this.waitInterval * 3;
@@ -76,18 +77,30 @@ class Socket {
         this.fns.push(fn);
     }
     emit(name, data) {
+        var _a;
         const packet = {
             name,
             data: JSON.stringify(data),
         };
         if (this.groupList.size > 0) {
-            this.groupList.forEach((group) => {
-                group.forEach((socket) => {
-                    if (socket.id !== this.id) {
-                        socket.emitList.push(packet);
-                        socket.doProgress();
-                    }
-                });
+            this.groupList.forEach((groupName) => {
+                const socketList = this.groups.socketList.get(groupName);
+                if (socketList != null) {
+                    socketList.forEach((socket) => {
+                        if (socket.id !== this.id) {
+                            socket.emitList.push(packet);
+                            socket.doProgress();
+                        }
+                    });
+                }
+            });
+            // 다른 클러스터에도 전달 요청
+            (_a = this.cluster) === null || _a === void 0 ? void 0 : _a.publish({
+                channel: 'emit',
+                data: {
+                    groupList: this.groupList,
+                    pkt: { name, data },
+                },
             });
         }
         else {
@@ -95,11 +108,8 @@ class Socket {
             this.doProgress();
         }
     }
-    to(group) {
-        const socketList = this.groups.socketList.get(group);
-        if (socketList != null) {
-            this.groupList.add(socketList);
-        }
+    to(groupName) {
+        this.groupList.add(groupName);
         return this;
     }
     join(groupName) {
