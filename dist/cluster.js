@@ -14,19 +14,22 @@ class Cluster {
         this.pub = new redis_1.RedisClient(options);
         this.sub = new redis_1.RedisClient(options);
         this.sub.on('subscribe', this.onSubscribe.bind(this));
-        this.sub.on('message_buffer', this.onMessage.bind(this));
+        this.sub.on('message', this.onMessage.bind(this));
+        this.sub.subscribe('emit');
     }
     onSubscribe(channel, count) {
         console.log('onSubscribe:', this.id, channel, count);
     }
     onMessage(channel, msg) {
         const payload = JSON.parse(msg);
-        switch (channel) {
-            case 'emit':
-                this.onEmit(payload);
-                break;
-            default:
-                break;
+        if (this.id !== payload.id) {
+            switch (channel) {
+                case 'emit':
+                    this.onEmit(payload);
+                    break;
+                default:
+                    break;
+            }
         }
     }
     onEmit(payload) {
@@ -34,7 +37,7 @@ class Cluster {
         emitInfo.groupList.forEach((groupName) => {
             this.io.to(groupName);
         });
-        this.io.emit(emitInfo.pkt.name, emitInfo.pkt.data);
+        this.io.emit(emitInfo.pkt.name, emitInfo.pkt.data, true);
     }
     publish(req) {
         const payload = {

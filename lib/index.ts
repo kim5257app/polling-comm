@@ -4,7 +4,9 @@ import { AnyId } from 'anyid';
 import Error from '@kim5257/js-error';
 
 import Server, { ServerEventParam } from './server';
+// eslint-disable-next-line import/no-cycle
 import Socket, { Options as SocketOpts } from './socket';
+// eslint-disable-next-line import/no-cycle
 import Groups from './groups';
 
 // eslint-disable-next-line import/no-cycle
@@ -201,7 +203,7 @@ export default class PollingComm {
     this.fns.push(fn);
   }
 
-  public emit(name: string, data: object) {
+  public emit(name: string, data: object, flag?: boolean) {
     if (this.groupList.size > 0) {
       this.groupList.forEach((groupName) => {
         const socketList = this.groups.socketList.get(groupName);
@@ -213,14 +215,16 @@ export default class PollingComm {
         }
       });
 
-      // 다른 클러스터에도 전달 요청
-      this.cluster?.publish({
-        channel: 'emit',
-        data: {
-          groupList: this.groupList,
-          pkt: { name, data },
-        },
-      });
+      if (flag == null) {
+        // 다른 클러스터에도 전달 요청
+        this.cluster?.publish({
+          channel: 'emit',
+          data: {
+            groupList: [...this.groupList],
+            pkt: {name, data},
+          },
+        });
+      }
     }
   }
 

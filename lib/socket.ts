@@ -156,7 +156,7 @@ export default class Socket {
       this.cluster?.publish({
         channel: 'emit',
         data: {
-          groupList: this.groupList,
+          groupList: [...this.groupList],
           pkt: { name, data },
         },
       });

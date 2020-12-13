@@ -98,7 +98,7 @@ class Socket {
             (_a = this.cluster) === null || _a === void 0 ? void 0 : _a.publish({
                 channel: 'emit',
                 data: {
-                    groupList: this.groupList,
+                    groupList: [...this.groupList],
                     pkt: { name, data },
                 },
             });

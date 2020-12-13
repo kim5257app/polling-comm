@@ -5,7 +5,9 @@ const events_1 = require("events");
 const anyid_1 = require("anyid");
 const js_error_1 = require("@kim5257/js-error");
 const server_1 = require("./server");
+// eslint-disable-next-line import/no-cycle
 const socket_1 = require("./socket");
+// eslint-disable-next-line import/no-cycle
 const groups_1 = require("./groups");
 // eslint-disable-next-line import/no-cycle
 const cluster_1 = require("./cluster");
@@ -169,7 +171,7 @@ class PollingComm {
     use(fn) {
         this.fns.push(fn);
     }
-    emit(name, data) {
+    emit(name, data, flag) {
         var _a;
         if (this.groupList.size > 0) {
             this.groupList.forEach((groupName) => {
@@ -180,14 +182,16 @@ class PollingComm {
                     });
                 }
             });
-            // 다른 클러스터에도 전달 요청
-            (_a = this.cluster) === null || _a === void 0 ? void 0 : _a.publish({
-                channel: 'emit',
-                data: {
-                    groupList: this.groupList,
-                    pkt: { name, data },
-                },
-            });
+            if (flag == null) {
+                // 다른 클러스터에도 전달 요청
+                (_a = this.cluster) === null || _a === void 0 ? void 0 : _a.publish({
+                    channel: 'emit',
+                    data: {
+                        groupList: [...this.groupList],
+                        pkt: { name, data },
+                    },
+                });
+            }
         }
     }
     to(groupName) {

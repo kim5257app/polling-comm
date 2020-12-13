@@ -24,7 +24,7 @@ export default class PollingComm {
     private run;
     on(name: 'connection', cb: (connection: any) => void): void;
     use(fn: (socket: Socket, next: (error?: any) => void) => void): void;
-    emit(name: string, data: object): void;
+    emit(name: string, data: object, flag?: boolean): void;
     to(groupName: string): PollingComm;
     close(): void;
     setCluster(opts: ClusterOptions): void;
