@@ -36,6 +36,9 @@ export default class PollingComm {
 
   private fns: ((socket: Socket, next: (error?: any) => void) => void)[] = [];
 
+  // emit 해야 할 그룹 목록
+  private groupList = new Set<string>();
+
   constructor(options: Options) {
     this.options = {
       ...options,
@@ -191,6 +194,32 @@ export default class PollingComm {
 
   public use(fn: (socket: Socket, next: (error?: any) => void) => void): void {
     this.fns.push(fn);
+  }
+
+  public emit(name: string, data: object) {
+    const packet = {
+      name,
+      data: JSON.stringify(data),
+    };
+
+    if (this.groupList.size > 0) {
+      this.groupList.forEach((groupName) => {
+        const socketList = this.groups.socketList.get(groupName);
+
+        if (socketList != null) {
+          socketList.forEach((socket) => {
+            socket.emit(name, data);
+          });
+        }
+      });
+
+      // TODO: 다른 클러스터에도 전달 요청
+    }
+  }
+
+  public to(groupName: string): PollingComm {
+    this.groupList.add(groupName);
+    return this;
   }
 
   public close(): void {

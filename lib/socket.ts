@@ -33,7 +33,7 @@ export default class Socket {
   private emitList: (Packet)[] = [];
 
   // emit 해야 할 그룹 목록
-  private groupList = new Set<Set<Socket>>();
+  private groupList = new Set<string>();
 
   // 수신된 데이터에 대한 이벤트
   public events = new Events();
@@ -131,27 +131,28 @@ export default class Socket {
     };
 
     if (this.groupList.size > 0) {
-      this.groupList.forEach((group) => {
-        group.forEach((socket) => {
-          if (socket.id !== this.id) {
-            socket.emitList.push(packet);
-            socket.doProgress();
-          }
-        });
+      this.groupList.forEach((groupName) => {
+        const socketList = this.groups.socketList.get(groupName);
+
+        if (socketList != null) {
+          socketList.forEach((socket) => {
+            if (socket.id !== this.id) {
+              socket.emitList.push(packet);
+              socket.doProgress();
+            }
+          });
+        }
       });
+
+      // TODO: 다른 클러스터에도 전달 요청
     } else {
       this.emitList.push(packet);
       this.doProgress();
     }
   }
 
-  public to(group: string): Socket {
-    const socketList = this.groups.socketList.get(group);
-
-    if (socketList != null) {
-      this.groupList.add(socketList);
-    }
-
+  public to(groupName: string): Socket {
+    this.groupList.add(groupName);
     return this;
   }
 
