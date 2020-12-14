@@ -64,7 +64,7 @@ class Cluster {
         if (cb != null) {
             this.reqList.set(payload.reqNo, cb);
         }
-        this.reqNo = this.reqNo + 1;
+        this.reqNo += 1;
     }
 }
 exports.default = Cluster;

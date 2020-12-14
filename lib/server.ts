@@ -42,6 +42,16 @@ export default class Server {
       this.serverEvent = serverEvent;
     } else {
       this.app = port;
+
+      this.app.use(cors());
+
+      // JSON parser 사용
+      // Body 크기 제한은 100MB로 제한
+      this.app.use(express.json({ limit: '100mb' }));
+
+      // '/comm' 경로 이후 루틴은 commRouter에서 설정
+      this.app.use('/comm', this.commRouter());
+
       this.server = null;
     }
 
@@ -60,6 +70,10 @@ export default class Server {
     }));
 
     router.get('/wait', ((req, res) => {
+      req.setTimeout(3 * 1000, () => {
+        res.status(408).end();
+        req.emit('close');
+      });
       this.serverEvent.emit('wait', { req, res });
     }));
 
