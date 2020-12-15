@@ -70,7 +70,7 @@ export default class Server {
     }));
 
     router.get('/wait', ((req, res) => {
-      req.setTimeout(3 * 1000, () => {
+      req.setTimeout(30 * 1000, () => {
         res.status(408).end();
         req.emit('close');
       });

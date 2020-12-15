@@ -6,7 +6,7 @@ import Groups from './groups';
 import Cluster from './cluster';
 export interface Packet {
     name: string;
-    data: string;
+    data: any;
 }
 export interface Options {
     groups: Groups;

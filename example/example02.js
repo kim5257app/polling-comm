@@ -2,10 +2,10 @@ const PollingComm = require('../dist').default;
 const Client = require('@kim5257/polling-comm-client').default;
 
 const server = new PollingComm({ port: 5000 });
-const server2 = new PollingComm({ port: 5001 });
+// const server2 = new PollingComm({ port: 5001 });
 
-server.setCluster({ host: 'localhost', port: 6379 });
-server2.setCluster({ host: 'localhost', port: 6379 });
+// server.setCluster({ host: 'localhost', port: 6379 });
+// server2.setCluster({ host: 'localhost', port: 6379 });
 
 server.on('connection', (socket) => {
   console.log('connection:', socket.id);
@@ -27,8 +27,14 @@ server.on('connection', (socket) => {
     console.log('store:', data);
     await socket.set('test', data);
   });
+
+  socket.on('echo', async (data) => {
+    console.log('echo:', data);
+    socket.emit('echo', data);
+  });
 });
 
+/*
 server2.on('connection', (socket) => {
   console.log('connection2:', socket.id);
 
@@ -50,9 +56,10 @@ server2.on('connection', (socket) => {
     await socket.set('test', data);
   });
 });
+ */
 
 const client = new Client('http://localhost:5000');
-const client2 = new Client('http://localhost:5001');
+const client2 = new Client('http://localhost:5000');
 
 client.on('connected', (socket) => {
   console.log('connected:', socket.id);
@@ -79,9 +86,16 @@ client2.on('send', (data) => {
   console.log('->:', JSON.stringify(data));
 });
 
-setInterval(() => {
+let cnt = 5;
+const interval = setInterval(() => {
   const data = { message: 'TEST' };
 
   console.log('<-:', JSON.stringify(data));
   client2.emit('send', { to: 'test', message: 'TEST' });
-}, 5000);
+
+  cnt -= 1;
+  if (cnt <= 0) {
+    clearInterval(interval);
+    client2.close();
+  }
+}, 2000);

@@ -43,5 +43,16 @@ class Groups {
             }
         }
     }
+    leaveAll({ socket }) {
+        // 그룹 목록 가져오기
+        const groupSet = this.groupList.get(socket.id);
+        if (groupSet != null) {
+            groupSet.forEach((groupName) => {
+                const group = this.socketList.get(groupName);
+                group === null || group === void 0 ? void 0 : group.delete(socket);
+            });
+            this.groupList.delete(socket.id);
+        }
+    }
 }
 exports.default = Groups;

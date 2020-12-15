@@ -215,10 +215,10 @@
   dependencies:
     debug "^4.2.0"
 
-"@kim5257/polling-comm-client@^0.0.3":
-  version "0.0.3"
-  resolved "http://kim5257.iptime.org/api/v4/projects/5/packages/npm/@kim5257/polling-comm-client/-/@kim5257/polling-comm-client-0.0.3.tgz#fabfb2d19799da58e53b6db3192eb7c64c91a835"
-  integrity sha1-+r+y0ZeZ2ljlO22zGS63xkyRqDU=
+"@kim5257/polling-comm-client@^0.0.9":
+  version "0.0.9"
+  resolved "http://kim5257.iptime.org/api/v4/projects/5/packages/npm/@kim5257/polling-comm-client/-/@kim5257/polling-comm-client-0.0.9.tgz#274b1c91275068527c49d7edfcb1b4c737658a6b"
+  integrity sha1-J0sckSdQaFJ8Sdft/LG0xzdlims=
   dependencies:
     "@kim5257/js-error" "^0.0.4"
     axios "^0.20.0"

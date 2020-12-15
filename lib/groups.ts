@@ -11,7 +11,7 @@ export default class Groups {
   // Socket ID를 key로 가지는 Group 집합 목록
   groupList = new Map<SocketId, Set<string>>();
 
-  public join({ groupName, socket }: { groupName: string, socket: any }): void {
+  public join({ groupName, socket }: { groupName: string, socket: Socket }): void {
     // Socket 집합 목록에 추가
     if (!this.socketList.has(groupName)) {
       this.socketList.set(groupName, new Set<any>([socket]));
@@ -27,7 +27,7 @@ export default class Groups {
     }
   }
 
-  public leave({ groupName, socket }: { groupName: string, socket: any }): void {
+  public leave({ groupName, socket }: { groupName: string, socket: Socket }): void {
     // Socket 집합 목록에서 제거
     const socketSet = this.socketList.get(groupName);
     if (socketSet != null) {
@@ -47,6 +47,19 @@ export default class Groups {
       if (groupSet.size <= 0) {
         this.groupList.delete(socket.id);
       }
+    }
+  }
+
+  public leaveAll({ socket }: { socket: Socket }): void {
+    // 그룹 목록 가져오기
+    const groupSet = this.groupList.get(socket.id);
+    if (groupSet != null) {
+      groupSet.forEach((groupName) => {
+        const group = this.socketList.get(groupName);
+        group?.delete(socket);
+      });
+
+      this.groupList.delete(socket.id);
     }
   }
 }

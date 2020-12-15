@@ -13,7 +13,7 @@ const debug = Debug('polling-comm/socket');
 
 export interface Packet {
   name: string;
-  data: string;
+  data: any;
 }
 
 export interface Options {
@@ -73,7 +73,7 @@ export default class Socket {
     this.timeout = new Date().getTime() + this.timeoutBase;
 
     this.events.on('disconnected', () => {
-      // TODO: 연결 해제된 경우 처리
+      this.groups.leaveAll({ socket: this });
     });
 
     this.events.on('recv', (packet: Packet) => {
@@ -135,7 +135,7 @@ export default class Socket {
   public emit(name: string, data: object) {
     const packet = {
       name,
-      data: JSON.stringify(data),
+      data,
     };
 
     if (this.groupList.size > 0) {
@@ -160,6 +160,8 @@ export default class Socket {
           pkt: { name, data },
         },
       });
+
+      this.groupList.clear();
     } else {
       this.emitList.push(packet);
       this.doProgress();

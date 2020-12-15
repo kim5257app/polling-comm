@@ -200,6 +200,7 @@ class PollingComm {
                     },
                 });
             }
+            this.groupList.clear();
         }
     }
     to(groupName) {

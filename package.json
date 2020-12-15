@@ -1,6 +1,6 @@
 {
   "name": "@kim5257/polling-comm",
-  "version": "1.1.3",
+  "version": "1.1.6",
   "description": "Long Polling Communication Module",
   "main": "dist/index.js",
   "scripts": {
@@ -21,7 +21,7 @@
     "@kim5257:registry": "http://kim5257.iptime.org/api/v4/projects/3/packages/npm/"
   },
   "devDependencies": {
-    "@kim5257/polling-comm-client": "^0.0.3",
+    "@kim5257/polling-comm-client": "^0.0.9",
     "@types/cors": "^2.8.8",
     "@types/debug": "^4.1.5",
     "@types/events": "^3.0.0",

@@ -41,7 +41,7 @@ class Server {
             this.serverEvent.emit('emit', { req, res });
         }));
         router.get('/wait', ((req, res) => {
-            req.setTimeout(3 * 1000, () => {
+            req.setTimeout(30 * 1000, () => {
                 res.status(408).end();
                 req.emit('close');
             });

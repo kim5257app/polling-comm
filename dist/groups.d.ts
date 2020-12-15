@@ -4,10 +4,13 @@ export default class Groups {
     groupList: Map<string, Set<string>>;
     join({ groupName, socket }: {
         groupName: string;
-        socket: any;
+        socket: Socket;
     }): void;
     leave({ groupName, socket }: {
         groupName: string;
-        socket: any;
+        socket: Socket;
+    }): void;
+    leaveAll({ socket }: {
+        socket: Socket;
     }): void;
 }

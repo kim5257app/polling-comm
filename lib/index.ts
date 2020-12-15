@@ -233,6 +233,8 @@ export default class PollingComm {
           },
         });
       }
+
+      this.groupList.clear();
     }
   }
 

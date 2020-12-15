@@ -24,7 +24,7 @@ class Socket {
         this.timeoutBase = this.waitInterval * 3;
         this.timeout = new Date().getTime() + this.timeoutBase;
         this.events.on('disconnected', () => {
-            // TODO: 연결 해제된 경우 처리
+            this.groups.leaveAll({ socket: this });
         });
         this.events.on('recv', (packet) => {
             // 수신 처리
@@ -80,7 +80,7 @@ class Socket {
         var _a;
         const packet = {
             name,
-            data: JSON.stringify(data),
+            data,
         };
         if (this.groupList.size > 0) {
             this.groupList.forEach((groupName) => {
@@ -102,6 +102,7 @@ class Socket {
                     pkt: { name, data },
                 },
             });
+            this.groupList.clear();
         }
         else {
             this.emitList.push(packet);
