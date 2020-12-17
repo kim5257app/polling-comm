@@ -2,10 +2,10 @@ const PollingComm = require('../dist').default;
 const Client = require('@kim5257/polling-comm-client').default;
 
 const server = new PollingComm({ port: 5000 });
-// const server2 = new PollingComm({ port: 5001 });
+const server2 = new PollingComm({ port: 5001 });
 
-// server.setCluster({ host: 'localhost', port: 6379 });
-// server2.setCluster({ host: 'localhost', port: 6379 });
+server.setCluster({ host: 'localhost', port: 6379 });
+server2.setCluster({ host: 'localhost', port: 6379 });
 
 server.on('connection', (socket) => {
   console.log('connection:', socket.id);
@@ -34,7 +34,6 @@ server.on('connection', (socket) => {
   });
 });
 
-/*
 server2.on('connection', (socket) => {
   console.log('connection2:', socket.id);
 
@@ -56,10 +55,9 @@ server2.on('connection', (socket) => {
     await socket.set('test', data);
   });
 });
- */
 
 const client = new Client('http://localhost:5000');
-const client2 = new Client('http://localhost:5000');
+const client2 = new Client('http://localhost:5001');
 
 client.on('connected', (socket) => {
   console.log('connected:', socket.id);

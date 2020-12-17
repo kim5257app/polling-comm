@@ -41,8 +41,9 @@ class Server {
             this.serverEvent.emit('emit', { req, res });
         }));
         router.get('/wait', ((req, res) => {
-            req.setTimeout(30 * 1000, () => {
-                res.status(408).end();
+            const timeout = (req.headers['comm-hash'] != null) ? (39) : (8);
+            req.setTimeout(timeout * 1000, () => {
+                res.status(204).end();
                 req.emit('close');
             });
             this.serverEvent.emit('wait', { req, res });
