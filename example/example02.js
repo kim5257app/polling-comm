@@ -17,7 +17,7 @@ server.on('connection', (socket) => {
   socket.on('send', async (data) => {
     console.log('test:', await socket.get('test'));
 
-    socket.to(data.to).emit('send', {
+    server.to(data.to).emit('send', {
       message: data.message,
       test: await socket.get('test'),
     });
@@ -44,7 +44,7 @@ server2.on('connection', (socket) => {
   socket.on('send', async (data) => {
     console.log('test2:', await socket.get('test'));
 
-    socket.to(data.to).emit('send', {
+    server2.to(data.to).emit('send', {
       message: data.message,
       test: await socket.get('test'),
     });
@@ -57,7 +57,7 @@ server2.on('connection', (socket) => {
 });
 
 const client = new Client('http://localhost:5000');
-const client2 = new Client('http://localhost:5001');
+const client2 = new Client('http://localhost:5000');
 
 client.on('connected', (socket) => {
   console.log('connected:', socket.id);

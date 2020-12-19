@@ -1,5 +1,6 @@
 import { AnyId } from 'anyid';
 import { RedisClient } from 'redis';
+import { EventEmitter } from 'events';
 
 // eslint-disable-next-line import/no-cycle
 import PollingComm from './index';
@@ -33,6 +34,8 @@ export default class Cluster {
 
   private io: PollingComm;
 
+  private events: EventEmitter = new EventEmitter();
+
   constructor(io:PollingComm, options: ClusterOptions) {
     this.io = io;
 
@@ -46,6 +49,7 @@ export default class Cluster {
 
     this.sub.subscribe('emit');
     this.sub.subscribe('groups');
+    this.sub.subscribe('notify');
   }
 
   private onSubscribe(channel: string, count: number) {
@@ -62,6 +66,9 @@ export default class Cluster {
           break;
         case 'emit':
           this.onEmit(payload);
+          break;
+        case 'notify':
+          this.onNotify(payload);
           break;
         default:
           break;
@@ -101,6 +108,24 @@ export default class Cluster {
       this.io.to(groupName);
     });
     this.io.emit(emitInfo.pkt.name, emitInfo.pkt.data, true);
+  }
+
+  private onNotify(payload: {
+    name: string,
+    data: any,
+  }): void {
+    this.events.emit(payload.name, payload.data);
+  }
+
+  public addOnNotify(name: string, cb: (data: any) => void): void {
+    this.events.on(name, cb);
+  }
+
+  public notify(name: string, data: any) {
+    this.pub.publish('notify', JSON.stringify({
+      name,
+      data,
+    }));
   }
 
   public publish(req: Request, cb?: RespCb) {
