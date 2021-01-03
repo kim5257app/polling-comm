@@ -121,7 +121,7 @@ export default class Cluster {
     this.events.on(name, cb);
   }
 
-  public notify(name: string, data: any) {
+  public notify(name: string, data: any): void {
     this.pub.publish('notify', JSON.stringify({
       name,
       data,

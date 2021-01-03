@@ -255,4 +255,12 @@ export default class PollingComm {
       cluster: this.cluster,
     };
   }
+
+  public notify(name: string, data: any): void {
+    this.cluster?.notify(name, data);
+  }
+
+  public addOnNotify(name: string, cb: (data: any) => void): void {
+    this.cluster?.addOnNotify(name, cb);
+  }
 }

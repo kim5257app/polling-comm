@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const anyid_1 = require("anyid");
 const redis_1 = require("redis");
+const events_1 = require("events");
 class Cluster {
     constructor(io, options) {
         this.id = new anyid_1.AnyId()
@@ -11,6 +12,7 @@ class Cluster {
             .id();
         this.reqNo = 0;
         this.reqList = new Map();
+        this.events = new events_1.EventEmitter();
         this.io = io;
         this.pub = new redis_1.RedisClient(options);
         this.sub = new redis_1.RedisClient(options);
@@ -19,6 +21,7 @@ class Cluster {
         this.sub.subscribe('response');
         this.sub.subscribe('emit');
         this.sub.subscribe('groups');
+        this.sub.subscribe('notify');
     }
     onSubscribe(channel, count) {
         console.log('onSubscribe:', this.id, channel, count);
@@ -32,6 +35,9 @@ class Cluster {
                     break;
                 case 'emit':
                     this.onEmit(payload);
+                    break;
+                case 'notify':
+                    this.onNotify(payload);
                     break;
                 default:
                     break;
@@ -53,6 +59,18 @@ class Cluster {
             this.io.to(groupName);
         });
         this.io.emit(emitInfo.pkt.name, emitInfo.pkt.data, true);
+    }
+    onNotify(payload) {
+        this.events.emit(payload.name, payload.data);
+    }
+    addOnNotify(name, cb) {
+        this.events.on(name, cb);
+    }
+    notify(name, data) {
+        this.pub.publish('notify', JSON.stringify({
+            name,
+            data,
+        }));
     }
     publish(req, cb) {
         const payload = {

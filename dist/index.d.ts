@@ -30,5 +30,7 @@ export default class PollingComm {
     to(groupName: string): PollingComm;
     close(): void;
     setCluster(opts: ClusterOptions): void;
+    notify(name: string, data: any): void;
+    addOnNotify(name: string, cb: (data: any) => void): void;
 }
 export {};

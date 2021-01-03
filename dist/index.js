@@ -217,6 +217,14 @@ class PollingComm {
             cluster: this.cluster,
         };
     }
+    notify(name, data) {
+        var _a;
+        (_a = this.cluster) === null || _a === void 0 ? void 0 : _a.notify(name, data);
+    }
+    addOnNotify(name, cb) {
+        var _a;
+        (_a = this.cluster) === null || _a === void 0 ? void 0 : _a.addOnNotify(name, cb);
+    }
 }
 exports.default = PollingComm;
 PollingComm.CLIENT_ID_LENGTH = 8;
