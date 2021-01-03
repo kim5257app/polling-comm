@@ -63,6 +63,10 @@ export default class PollingComm {
     } else {
       throw Error.makeFail('WRONG_ARGS', 'Wrong Arguments');
     }
+
+    setInterval(() => {
+      Socket.checkTimeout(this.socketList);
+    }, options.waitInterval);
   }
 
   private initServerEvents(): void {

@@ -67,7 +67,7 @@ export default class Socket {
 
     this.store = (options.store != null) ? options.store : (new MemStore());
 
-    this.waitInterval = (options.waitInterval) ? (options.waitInterval) : (10 * 1000);
+    this.waitInterval = (options.waitInterval) ? (options.waitInterval) : (60 * 1000);
     this.timeoutBase = this.waitInterval * 3;
 
     this.timeout = new Date().getTime() + this.timeoutBase;
@@ -204,5 +204,16 @@ export default class Socket {
 
   private resetTimeout(): void {
     this.timeout = new Date().getTime() + this.timeoutBase;
+  }
+
+  public static checkTimeout(sockets: Map<string, Socket>) {
+    const curTime = new Date().getTime();
+
+    sockets.forEach((socket) => {
+      if (socket.timeout < curTime) {
+        socket.events.emit('disconnected');
+        sockets.delete(socket.id);
+      }
+    });
   }
 }

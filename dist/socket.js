@@ -20,7 +20,7 @@ class Socket {
         this.groups = options.groups;
         this.cluster = options.cluster;
         this.store = (options.store != null) ? options.store : (new store_1.MemStore());
-        this.waitInterval = (options.waitInterval) ? (options.waitInterval) : (10 * 1000);
+        this.waitInterval = (options.waitInterval) ? (options.waitInterval) : (60 * 1000);
         this.timeoutBase = this.waitInterval * 3;
         this.timeout = new Date().getTime() + this.timeoutBase;
         this.events.on('disconnected', () => {
@@ -139,6 +139,15 @@ class Socket {
     }
     resetTimeout() {
         this.timeout = new Date().getTime() + this.timeoutBase;
+    }
+    static checkTimeout(sockets) {
+        const curTime = new Date().getTime();
+        sockets.forEach((socket) => {
+            if (socket.timeout < curTime) {
+                socket.events.emit('disconnected');
+                sockets.delete(socket.id);
+            }
+        });
     }
 }
 exports.default = Socket;

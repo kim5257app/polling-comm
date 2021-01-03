@@ -40,4 +40,5 @@ export default class Socket {
     set(key: string, value: any): Promise<void>;
     private doProgress;
     private resetTimeout;
+    static checkTimeout(sockets: Map<string, Socket>): void;
 }

@@ -40,6 +40,9 @@ class PollingComm {
         else {
             throw js_error_1.default.makeFail('WRONG_ARGS', 'Wrong Arguments');
         }
+        setInterval(() => {
+            socket_1.default.checkTimeout(this.socketList);
+        }, options.waitInterval);
     }
     initServerEvents() {
         this.serverEvent.on('connect', ({ res }) => {
