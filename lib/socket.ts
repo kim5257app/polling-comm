@@ -72,6 +72,9 @@ export default class Socket {
 
     this.timeout = new Date().getTime() + this.timeoutBase;
 
+    // 이벤트 최대 수 지정
+    this.events.setMaxListeners(30);
+
     this.events.on('disconnected', () => {
       this.groups.leaveAll({ socket: this });
     });
@@ -114,13 +117,14 @@ export default class Socket {
     this.waitRes = res;
 
     req.on('close', () => {
-      debug('closed by client');
+      console.log(`closed by client: ${this.id}`);
       this.waitRes = null;
     });
 
     this.resetTimeout();
 
     // wait 응답 처리
+    console.log('Call doProgress by wait:', res.getHeader('timestamp'));
     this.doProgress();
   }
 
@@ -164,6 +168,8 @@ export default class Socket {
       this.groupList.clear();
     } else {
       this.emitList.push(packet);
+
+      console.log('Call doProgress by emit');
       this.doProgress();
     }
   }
@@ -194,6 +200,8 @@ export default class Socket {
   // wait 요청이 오면 emit 으로 수신된 데이터로 응답
   // emit 요청이 오면 wait 요청이 있을 경우 데이터로 응답
   private doProgress(): void {
+    console.log(`doProgress: ${this.waitRes?.getHeader('timestamp')}, ${this.emitList.length}`);
+
     // wait 요청이 있으면서 emitList 안에 데이터가 있으면 처리
     if (this.waitRes != null && this.emitList.length > 0) {
       this.waitRes.status(200).json(this.emitList[0]);

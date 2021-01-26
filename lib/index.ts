@@ -141,6 +141,8 @@ export default class PollingComm {
         } else {
           const socket = this.socketList.get(id);
           if (socket != null) {
+            console.log(`call wait: ${socket.id}`);
+
             // Long Polling 처리
             socket.wait({ req, res });
           } else {

@@ -45,6 +45,8 @@ class Server {
                 res.status(408).end();
                 req.emit('close');
             });
+            console.log(`wait Header: ${JSON.stringify(req.headers)}`);
+            res.setHeader('timestamp', (new Date()).getTime());
             this.serverEvent.emit('wait', { req, res });
         }));
         return router;

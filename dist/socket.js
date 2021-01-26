@@ -23,6 +23,8 @@ class Socket {
         this.waitInterval = (options.waitInterval) ? (options.waitInterval) : (60 * 1000);
         this.timeoutBase = this.waitInterval * 3;
         this.timeout = new Date().getTime() + this.timeoutBase;
+        // 이벤트 최대 수 지정
+        this.events.setMaxListeners(30);
         this.events.on('disconnected', () => {
             this.groups.leaveAll({ socket: this });
         });
@@ -63,11 +65,12 @@ class Socket {
     wait({ req, res }) {
         this.waitRes = res;
         req.on('close', () => {
-            debug('closed by client');
+            console.log(`closed by client: ${this.id}`);
             this.waitRes = null;
         });
         this.resetTimeout();
         // wait 응답 처리
+        console.log('Call doProgress by wait:', res.getHeader('timestamp'));
         this.doProgress();
     }
     on(name, cb) {
@@ -106,6 +109,7 @@ class Socket {
         }
         else {
             this.emitList.push(packet);
+            console.log('Call doProgress by emit');
             this.doProgress();
         }
     }
@@ -130,6 +134,8 @@ class Socket {
     // wait 요청이 오면 emit 으로 수신된 데이터로 응답
     // emit 요청이 오면 wait 요청이 있을 경우 데이터로 응답
     doProgress() {
+        var _a;
+        console.log(`doProgress: ${(_a = this.waitRes) === null || _a === void 0 ? void 0 : _a.getHeader('timestamp')}, ${this.emitList.length}`);
         // wait 요청이 있으면서 emitList 안에 데이터가 있으면 처리
         if (this.waitRes != null && this.emitList.length > 0) {
             this.waitRes.status(200).json(this.emitList[0]);
