@@ -117,8 +117,11 @@ export default class Socket {
     this.waitRes = res;
 
     req.on('close', () => {
-      console.log(`closed by client: ${this.id}`);
-      this.waitRes = null;
+      console.log(`res timestamp: ${req.res?.getHeader('timestamp')}, ${this.waitRes?.getHeader('timestamp')}`);
+      if (req.res?.getHeader('timestamp') === this.waitRes?.getHeader('timestamp')) {
+        console.log(`closed by client: ${this.id}`);
+        this.waitRes = null;
+      }
     });
 
     this.resetTimeout();

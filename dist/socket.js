@@ -65,8 +65,12 @@ class Socket {
     wait({ req, res }) {
         this.waitRes = res;
         req.on('close', () => {
-            console.log(`closed by client: ${this.id}`);
-            this.waitRes = null;
+            var _a, _b, _c, _d;
+            console.log(`res timestamp: ${(_a = req.res) === null || _a === void 0 ? void 0 : _a.getHeader('timestamp')}, ${(_b = this.waitRes) === null || _b === void 0 ? void 0 : _b.getHeader('timestamp')}`);
+            if (((_c = req.res) === null || _c === void 0 ? void 0 : _c.getHeader('timestamp')) === ((_d = this.waitRes) === null || _d === void 0 ? void 0 : _d.getHeader('timestamp'))) {
+                console.log(`closed by client: ${this.id}`);
+                this.waitRes = null;
+            }
         });
         this.resetTimeout();
         // wait 응답 처리
