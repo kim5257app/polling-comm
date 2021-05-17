@@ -70,10 +70,10 @@ export default class Server {
     }));
 
     router.get('/wait', ((req, res) => {
-      req.setTimeout(90 * 1000, () => {
+      (res as any).timer = setTimeout(() => {
         res.status(408).end();
         req.emit('close');
-      });
+      }, 90 * 1000);
 
       console.log(`wait Header: ${JSON.stringify(req.headers)}`);
 

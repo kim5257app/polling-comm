@@ -41,10 +41,10 @@ class Server {
             this.serverEvent.emit('emit', { req, res });
         }));
         router.get('/wait', ((req, res) => {
-            req.setTimeout(90 * 1000, () => {
+            res.timer = setTimeout(() => {
                 res.status(408).end();
                 req.emit('close');
-            });
+            }, 90 * 1000);
             console.log(`wait Header: ${JSON.stringify(req.headers)}`);
             res.setHeader('timestamp', (new Date()).getTime());
             this.serverEvent.emit('wait', { req, res });
