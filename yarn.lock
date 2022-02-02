@@ -215,10 +215,10 @@
   dependencies:
     debug "^4.2.0"
 
-"@kim5257app/polling-comm-client@^0.1.1":
-  version "0.1.1"
-  resolved "https://registry.yarnpkg.com/@kim5257app/polling-comm-client/-/polling-comm-client-0.1.1.tgz#e88fa8c54d18004b0354d53faa43d762b099c840"
-  integrity sha512-KxbefGSCm06IAlJmq57sjDYH0wrrQuBFghlW+9vTt5gDIkktmHyLahgAJd194WPHW7e85UGqeM1sNxEiff8GxQ==
+"@kim5257app/polling-comm-client@^0.1.2":
+  version "0.1.2"
+  resolved "https://registry.yarnpkg.com/@kim5257app/polling-comm-client/-/polling-comm-client-0.1.2.tgz#72d96e0336ce1d7fd0b053d746c6442db46a3b3c"
+  integrity sha512-CKoOdMKMeXkl8QzYSHVLSzA3w09KOCcbrGrp9qsYPJTOOq0Rw04YAorkw9jd3inaRprCpTWBmdkkpLIUhY8FIg==
   dependencies:
     "@kim5257app/js-error" "^0.0.4"
     axios "^0.20.0"

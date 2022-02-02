@@ -1,5 +1,5 @@
 const PollingComm = require('../dist').default;
-const Client = require('@kim5257/polling-comm-client').default;
+const Client = require('@kim5257app/polling-comm-client').default;
 
 const server = new PollingComm({ port: 4000 });
 
