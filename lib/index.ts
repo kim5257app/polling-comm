@@ -1,7 +1,7 @@
 import Debug from 'debug';
 import { EventEmitter as Events } from 'events';
 import { AnyId } from 'anyid';
-import Error from '@kim5257/js-error';
+import Error from '@kim5257app/js-error';
 import * as express from 'express';
 
 import Server, { ServerEventParam } from './server';

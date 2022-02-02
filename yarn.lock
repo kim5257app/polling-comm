@@ -208,19 +208,19 @@
   resolved "https://registry.yarnpkg.com/@istanbuljs/schema/-/schema-0.1.2.tgz#26520bf09abe4a5644cd5414e37125a8954241dd"
   integrity sha512-tsAQNx32a8CoFhjhijUIhI4kccIAgmGhy8LZMZgGfmXcpMbPRUqn5LWmgRttILi6yeGmBJd2xsPkFMs0PzgPCw==
 
-"@kim5257/js-error@^0.0.4":
+"@kim5257app/js-error@^0.0.4":
   version "0.0.4"
-  resolved "http://kim5257.iptime.org/api/v4/projects/4/packages/npm/@kim5257/js-error/-/@kim5257/js-error-0.0.4.tgz#aa32147b960a4158e5260f1f07ccf09d10e10aab"
-  integrity sha1-qjIUe5YKQVjlJg8fB8zwnRDhCqs=
+  resolved "https://registry.yarnpkg.com/@kim5257app/js-error/-/js-error-0.0.4.tgz#6eb6f685c79214e457b5920cdcfa7589661fd158"
+  integrity sha512-PmzMPgCDE3HDcYi6POBJ9GRMYQXy136cIGfkLx5g/92V4S+VIRmjEXkUJY/MH6XB/yTGL2nKUct9jfShzKPTHA==
   dependencies:
     debug "^4.2.0"
 
-"@kim5257/polling-comm-client@^0.0.9":
-  version "0.0.9"
-  resolved "http://kim5257.iptime.org/api/v4/projects/5/packages/npm/@kim5257/polling-comm-client/-/@kim5257/polling-comm-client-0.0.9.tgz#274b1c91275068527c49d7edfcb1b4c737658a6b"
-  integrity sha1-J0sckSdQaFJ8Sdft/LG0xzdlims=
+"@kim5257app/polling-comm-client@^0.1.1":
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/@kim5257app/polling-comm-client/-/polling-comm-client-0.1.1.tgz#e88fa8c54d18004b0354d53faa43d762b099c840"
+  integrity sha512-KxbefGSCm06IAlJmq57sjDYH0wrrQuBFghlW+9vTt5gDIkktmHyLahgAJd194WPHW7e85UGqeM1sNxEiff8GxQ==
   dependencies:
-    "@kim5257/js-error" "^0.0.4"
+    "@kim5257app/js-error" "^0.0.4"
     axios "^0.20.0"
     debug "^4.2.0"
 

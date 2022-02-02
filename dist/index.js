@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const debug_1 = require("debug");
 const events_1 = require("events");
 const anyid_1 = require("anyid");
-const js_error_1 = require("@kim5257/js-error");
+const js_error_1 = require("@kim5257app/js-error");
 const server_1 = require("./server");
 // eslint-disable-next-line import/no-cycle
 const socket_1 = require("./socket");

@@ -1,5 +1,5 @@
 {
-  "name": "@kim5257/polling-comm",
+  "name": "@kim5257app/polling-comm",
   "version": "1.1.16",
   "description": "Long Polling Communication Module",
   "main": "dist/index.js",
@@ -13,15 +13,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "http://kim5257.iptime.org/kim5257/polling-comm.git"
+    "url": "https://github.com/kim5257app/polling-comm.git"
   },
   "author": "Jaegu Kim",
   "license": "MIT",
-  "publishConfig": {
-    "@kim5257:registry": "http://kim5257.iptime.org/api/v4/projects/3/packages/npm/"
-  },
   "devDependencies": {
-    "@kim5257/polling-comm-client": "^0.0.9",
+    "@kim5257app/polling-comm-client": "^0.1.1",
     "@types/cors": "^2.8.8",
     "@types/debug": "^4.1.5",
     "@types/events": "^3.0.0",
@@ -39,7 +36,7 @@
     "typescript": "^4.0.3"
   },
   "dependencies": {
-    "@kim5257/js-error": "^0.0.4",
+    "@kim5257app/js-error": "^0.0.4",
     "@types/connect-timeout": "^0.0.34",
     "anyid": "^1.0.7",
     "connect-timeout": "^1.9.0",
